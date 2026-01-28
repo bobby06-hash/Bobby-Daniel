@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNS DT-AI-Hack - Groq Real-time AI Agent Hackathon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF3366;
+            --secondary: #3366FF;
+            --tertiary: #9D4EDD;
+            --dark: #0A0E27;
+            --dark-secondary: #151B3B;
+            --dark-tertiary: #1E2749;
+            --light: #FFFFFF;
+            --gray: #8B92B0;
+            --success: #00D9A5;
+            --warning: #FFB020;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--light);
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: var(--light);
+            padding: 0.7rem 1.8rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .nav-btn:hover {
+            background: #FF4477;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 51, 102, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 160px 2rem 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 51, 102, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 51, 102, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 51, 102, 0.3);
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 3rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 900px;
+            margin: 4rem auto;
+        }
+
+        .stat-item {
+            padding: 2rem;
+            background: var(--dark-secondary);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 1rem 2.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--light);
+        }
+
+        .btn-primary:hover {
+            background: #FF4477;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 51, 102, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--light);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 100px 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Platform Section */
+        .platform-card {
+            background: var(--dark-secondary);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .platform-intro {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .platform-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-box {
+            background: var(--dark-tertiary);
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .feature-box h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: var(--light);
+        }
+
+        .feature-box p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* Goal Section */
+        .goal-section {
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.1), rgba(51, 102, 255, 0.1));
+            border-radius: 20px;
+            padding: 4rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .goal-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Challenge Cards */
+        .challenge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .challenge-card {
+            background: var(--dark-secondary);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .challenge-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .challenge-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        .ready-card {
+            background: var(--primary);
+            color: var(--light);
+            grid-column: span 1;
+        }
+
+        .ready-card h3 {
+            color: var(--light);
+        }
+
+        /* Steps Section */
+        .steps-container {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 2rem;
+            background: var(--dark-secondary);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .step-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .step-content p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* Resources Grid */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .resource-card {
+            background: var(--dark-secondary);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+        }
+
+        .resource-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Pricing Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--dark-secondary);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.1), transparent);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--primary);
+            color: var(--light);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .promo-code {
+            background: var(--dark-tertiary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            text-align: center;
+            border: 2px dashed rgba(255, 51, 102, 0.3);
+        }
+
+        .code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.1em;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 3rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 1fr 100px 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+            align-items: center;
+        }
+
+        .timeline-content {
+            background: var(--dark-secondary);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content:first-child {
+            grid-column: 3;
+        }
+
+        .timeline-item:nth-child(even) .timeline-dot {
+            order: -1;
+        }
+
+        .timeline-dot {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            margin: 0 auto;
+        }
+
+        .timeline-status {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+        }
+
+        /* Architecture Diagram */
+        .architecture-diagram {
+            background: var(--dark-secondary);
+            padding: 3rem;
+            border-radius: 20px;
+            margin-top: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .agent-box {
+            background: var(--dark-tertiary);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid rgba(255, 51, 102, 0.3);
+        }
+
+        .agent-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .agent-model {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Judging Criteria */
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .criteria-card {
+            background: var(--dark-secondary);
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .percentage {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        /* Submission Guidelines */
+        .submission-steps {
+            display: grid;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .submission-step {
+            background: var(--dark-secondary);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .submission-step ul {
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .submission-step li {
+            color: var(--gray);
+            margin-bottom: 0.8rem;
+            line-height: 1.7;
+        }
+
+        /* Community Section */
+        .community-card {
+            background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+            padding: 4rem;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .community-card h3 {
+            color: var(--light);
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .social-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .social-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+        }
+
+        /* Tracks Section */
+        .tracks-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .track-card {
+            background: var(--dark-secondary);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .track-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+        }
+
+        .track-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .track-card ul {
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .track-card li {
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-secondary);
+            padding: 4rem 2rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand p {
+            color: var(--gray);
+            margin-top: 1rem;
+            line-height: 1.8;
+        }
+
+        .footer-links h4 {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.8rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--light);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats, .challenge-grid, .resources-grid, .criteria-grid, .tracks-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pricing-grid, .platform-features, .agent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-item {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 50px;
+            }
+
+            .timeline-dot {
+                position: absolute;
+                left: 0;
+            }
+
+            .social-links {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .stats, .challenge-grid, .resources-grid, .criteria-grid, .tracks-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">🎯 SNS DT-AI-Hack</div>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#challenge">Challenge</a></li>
+                <li><a href="#tracks">Tracks</a></li>
+                <li><a href="#timeline">Timeline</a></li>
+            </ul>
+            <a href="#submit" class="nav-btn">Login</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Legacy Version • Powered by Groq</div>
+            <h1>Real-world Problems Solved with<br><span class="gradient-text">Real-time Inference on Groq</span></h1>
+            <p>Build multi-agent AI systems that can perceive, reason, and act with unprecedented speed</p>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">$18K+</div>
+                    <div class="stat-label">Worth Credits & Prizes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Participants</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Challenge Tracks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">⚡ Fast</div>
+                    <div class="stat-label">Inference Speed</div>
+                </div>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="#resources" class="btn-primary">Start Building Now</a>
+                <a href="#resources" class="btn-secondary">View Resources</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Section -->
+    <section id="platform">
+        <h2>What is the Groq Platform?</h2>
+        <div class="platform-card">
+            <p class="platform-intro">
+                Groq is a generative AI solutions company and creator of the LPU™ Inference Engine, providing the speed developers need and the scalability industry requires.
+            </p>
+            <p class="platform-intro">
+                Founded in 2016 by Jonathan Ross, inventor of the Google Tensor Processing Unit (TPU), Groq pioneered the Language Processing Unit as the first chip purpose-built for AI inference.
+            </p>
+
+            <div class="platform-features">
+                <div class="feature-box">
+                    <h4>☁️ GroqCloud</h4>
+                    <p>Full-stack cloud platform delivering fast AI inference at scale</p>
+                </div>
+                <div class="feature-box">
+                    <h4>🖥️ GroqRack</h4>
+                    <p>Compute clusters for on-premises deployments</p>
+                </div>
+            </div>
+
+            <p class="platform-intro" style="margin-top: 2rem;">
+                Groq technology powers real-time AI applications across industries, enabling developers to turn ideas into production-ready solutions at unprecedented speed.
+            </p>
+        </div>
+    </section>
+
+    <!-- Goal Section -->
+    <section id="overview">
+        <div class="goal-section">
+            <div class="goal-icon">🎯</div>
+            <h2>Hackathon Goal</h2>
+            <p style="font-size: 1.2rem; color: var(--light); max-width: 900px; margin: 0 auto;">
+                Build real-world AI agent systems that can perceive, reason, and act powered by Groq's ultra-fast inference and optionally integrated with Model Context Protocol (MCP) for seamless tool/data connectivity.
+            </p>
+        </div>
+    </section>
+
+    <!-- Challenge Overview -->
+    <section>
+        <h2>Overview</h2>
+        <div class="platform-card">
+            <h3>The Challenge</h3>
+            <p style="color: var(--gray); line-height: 1.8;">
+                Develop multi-agent systems that genuinely solve real problems (not just demos), showcasing:
+            </p>
+            <ul style="margin-left: 2rem; margin-top: 1.5rem; color: var(--gray); line-height: 2;">
+                <li>At least 2 specialized agents working together</li>
+                <li>Real-time performance using Groq API</li>
+                <li>(Optional) MCP integration with external tools or APIs</li>
+                <li>Multi-modal intelligence – combine at least two modalities (text, voice, vision, etc.)</li>
+                <li>Meaningful impact – solve a problem you care about</li>
+            </ul>
+        </div>
+
+        <div class="challenge-grid" style="margin-top: 3rem;">
+            <div class="challenge-card">
+                <div class="card-icon">💬</div>
+                <h3>Beyond Chatbots</h3>
+                <p>This isn't about creating another chatbot. It's about orchestrating intelligent agent workflows that can perceive, reason, and act across multiple modalities in real-time.</p>
+            </div>
+            <div class="challenge-card">
+                <div class="card-icon">🌍</div>
+                <h3>Real-World Impact</h3>
+                <p>Think about what you or others struggle with that could be solved with AI. Your agents will have the speed and capabilities to make it happen with Groq.</p>
+            </div>
+            <div class="ready-card">
+                <div class="card-icon">🚀</div>
+                <h3>Ready to Build?</h3>
+                <p>Everything you need to create powerful multi-agent systems awaits below.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Challenge Requirements -->
+    <section id="challenge">
+        <h2>The Challenge: Build Multi-Agent Systems<br>That Actually Work</h2>
+        <div class="challenge-grid">
+            <div class="challenge-card">
+                <div class="card-icon">🤖</div>
+                <h3>Multi-Agent Architecture</h3>
+                <p>Deploy at least 2 specialized agents working in coordination</p>
+            </div>
+            <div class="challenge-card">
+                <div class="card-icon">⚡</div>
+                <h3>Real-Time Performance</h3>
+                <p>Leverage Groq's lightning-fast inference for responsive user experiences</p>
+            </div>
+            <div class="challenge-card">
+                <div class="card-icon">🔌</div>
+                <h3>MCP Integration</h3>
+                <p>Use Model Context Protocol with external tools or pre-built agents</p>
+            </div>
+            <div class="challenge-card">
+                <div class="card-icon">🎯</div>
+                <h3>Multi-Modal Intelligence</h3>
+                <p>Incorporate at least two modalities (text, voice, vision)</p>
+            </div>
+            <div class="challenge-card">
+                <div class="card-icon">💡</div>
+                <h3>Genuine Use Case</h3>
+                <p>Solve a real problem that's near to your heart - not a contrived demo</p>
+            </div>
+            <div class="ready-card">
+                <div class="card-icon">🚀</div>
+                <h3>Ready to Build?</h3>
+                <p>AIM × Groq Developer Resources</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Guide -->
+    <section id="resources">
+        <h2>Quick Start Guide</h2>
+        <p style="text-align: center; color: var(--gray); font-size: 1.2rem; margin-bottom: 3rem;">Everything you need to build your multi-agent system</p>
+        
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Create Your Account</h3>
+                    <p>Visit console.groq.com and sign up for a free account.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Generate Groq API Key</h3>
+                    <p>Once logged in, navigate to API Keys in the top sidebar and create your Groq API key. You have access to millions of free tokens on our free tier.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Choose Your Models</h3>
+                    <p>Browse available models at console.groq.com/docs/models. For multi-agent systems, you'll want different models for different agent roles.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Test in Playground</h3>
+                    <p>Use the playground to test prompts and understand model behavior before writing code. This helps you determine which models work best for each agent role.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Make Your First API Call</h3>
+                    <p>Experience the performance of Groq for yourself and have fun building! 🚀</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="resources-grid" style="margin-top: 4rem;">
+            <div class="resource-card">
+                <div class="resource-icon">📚</div>
+                <h3>Groq Console</h3>
+                <p style="color: var(--gray);">Create projects, view usage, and manage organization settings.</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">🤖</div>
+                <h3>Models</h3>
+                <p style="color: var(--gray);">Browse supported models, capabilities, and best-fit use cases.</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">🎮</div>
+                <h3>Playground</h3>
+                <p style="color: var(--gray);">Experiment with prompts and streaming responses in your browser.</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">⚡</div>
+                <h3>Rate Limits</h3>
+                <p style="color: var(--gray);">Understand concurrency, throughput, and quotas to plan reliable workloads.</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">🔑</div>
+                <h3>API Keys</h3>
+                <p style="color: var(--gray);">Generate and rotate API credentials securely.</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">🏆</div>
+                <h3>Hackathon</h3>
+                <p style="color: var(--gray);">Event details, timelines, prizes, and participation guidelines.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section>
+        <h2>Pricing Tiers</h2>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Free Tier</h3>
+                <p style="color: var(--gray); margin: 1.5rem 0;">Includes generous daily token limits designed for hackathon development. You can build and test complete multi-agent systems without any cost.</p>
+                <ul style="margin-left: 1.5rem; color: var(--gray); line-height: 2;">
+                    <li>Millions of free tokens</li>
+                    <li>Perfect for prototyping & testing</li>
+                    <li>No credit card required</li>
+                </ul>
+            </div>
+
+            <div class="pricing-card featured">
+                <div class="pricing-badge">HACKATHON SPECIAL</div>
+                <h3>Developer Tier</h3>
+                <p style="color: var(--gray); margin: 1.5rem 0;">When you're ready to scale or need higher rate limits, upgrade to our pay-as-you-go developer tier.</p>
+                <p style="color: var(--light); font-weight: 600; margin-bottom: 1rem;">🎁 Special Offer for Participants:</p>
+                <p style="color: var(--gray); margin-bottom: 1.5rem;">$10 in API credits (equivalent to hundreds of millions of tokens) to get you started with production deployment.</p>
+                
+                <div class="promo-code">
+                    <p style="color: var(--gray); margin-bottom: 0.5rem; font-size: 0.9rem;">Use promo code:</p>
+                    <div class="code">AIMGROQAUG2025</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Resources -->
+    <section>
+        <h2>Code Examples and Learning Resources</h2>
+        <div class="resources-grid">
+            <div class="resource-card">
+                <div class="resource-icon">📖</div>
+                <h3>Official Documentation</h3>
+                <p style="color: var(--gray);">Comprehensive API reference and docs at console.groq.com/docs</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">🏗️</div>
+                <h3>Build With Groq</h3>
+                <p style="color: var(--gray);">Complete application examples at github.com/build-with-groq</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">📚</div>
+                <h3>Groq API Cookbook</h3>
+                <p style="color: var(--gray);">Step-by-step tutorials at github.com/groq/groq-api-cookbook</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">🖥️</div>
+                <h3>Groq Desktop Client (MCP)</h3>
+                <p style="color: var(--gray);">Explore MCP servers through our official Groq Desktop client</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">💻</div>
+                <h3>Groq Code CLI</h3>
+                <p style="color: var(--gray);">Code with GPT-OSS or Kimi K2 models on Groq for fast development</p>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon">📄</div>
+                <h3>LLMs Full Text</h3>
+                <p style="color: var(--gray);">Complete API documentation in text format for easy copying</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community -->
+    <section>
+        <h2>Community and Support</h2>
+        <div class="platform-card">
+            <h3>Hackathon Support</h3>
+            <p style="color: var(--gray); line-height: 1.8;">
+                During the event, our Developer Relations team actively monitors community channels to provide real-time assistance with implementation questions and technical support.
+            </p>
+        </div>
+
+        <div class="social-links">
+            <div class="social-card">
+                <h4>𝕏 @GroqInc</h4>
+                <p style="color: var(--gray); font-size: 0.9rem;">Official updates and announcements</p>
+            </div>
+            <div class="social-card">
+                <h4>𝕏 @ozenhati</h4>
+                <p style="color: var(--gray); font-size: 0.9rem;">Developer insights, best practices, and product tips</p>
+            </div>
+            <div class="social-card">
+                <h4>𝕏 @benankdev</h4>
+                <p style="color: var(--gray); font-size: 0.9rem;">Community examples, repos, and engineering updates</p>
+            </div>
+            <div class="social-card">
+                <h4>𝕏 @yawnxyz</h4>
+                <p style="color: var(--gray); font-size: 0.9rem;">Announcements, resources, and ecosystem highlights</p>
+            </div>
+        </div>
+
+        <div class="community-card">
+            <h3>Join Our Community</h3>
+            <p style="font-size: 1.1rem; color: rgba(255, 255, 255, 0.9);">Connect with fellow participants, get real-time support, share your progress, and connect with fellow participants from around the world.</p>
+            <a href="#" class="btn-primary" style="margin-top: 2rem;">Join Telegram Group</a>
+        </div>
+    </section>
+
+    <!-- Why This Matters -->
+    <section>
+        <h2>Why This Matters</h2>
+        <div class="challenge-grid">
+            <div class="challenge-card">
+                <div class="card-icon">⚡</div>
+                <h3>Groq = Real-time Inference</h3>
+                <p>Milliseconds response time</p>
+            </div>
+            <div class="challenge-card">
+                <div class="card-icon">🔌</div>
+                <h3>MCP = Seamless Integration</h3>
+                <p>Production-grade agents</p>
+            </div>
+            <div class="challenge-card">
+                <div class="card-icon">🚀</div>
+                <h3>Your Opportunity</h3>
+                <p>Build the next generation of intelligent AI systems</p>
+            </div>
+        </div>
+
+        <div class="platform-card" style="margin-top: 3rem;">
+            <h3>Why are we excited about this hackathon?</h3>
+            <div class="platform-features" style="margin-top: 2rem;">
+                <div class="feature-box">
+                    <h4>⚡ Lightning-Fast Agent Orchestration</h4>
+                    <p>Groq's inference speed enables true real-time multi-agent collaboration. Your agents can exchange information, coordinate actions, and respond to users in milliseconds, not minutes.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>🔌 MCP-Powered Tool Integration</h4>
+                    <p>Connect your agents to databases, APIs, file systems, and external services through standardized protocols. No more brittle API integrations.</p>
+                </div>
+            </div>
+            <div class="feature-box" style="margin-top: 2rem; border-left-color: var(--secondary);">
+                <h4>🏗️ Production-Ready Architecture</h4>
+                <p>Build systems that can handle real workloads, not just proof-of-concepts.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Challenge Tracks -->
+    <section id="tracks">
+        <h2>Challenge Tracks</h2>
+        <p style="text-align: center; color: var(--gray); font-size: 1.2rem; margin-bottom: 3rem;">Choose your focus area or create a cross-domain solution</p>
+        
+        <div class="tracks-grid">
+            <div class="track-card">
+                <div class="track-icon">🏥</div>
+                <h3>Healthcare & Diagnostics</h3>
+                <p style="color: var(--gray); margin-bottom: 1rem;">AI agents for medical diagnosis, patient monitoring, and healthcare automation</p>
+                <ul>
+                    <li>Patient data analysis</li>
+                    <li>Diagnostic assistance</li>
+                    <li>Medical record processing</li>
+                </ul>
+            </div>
+
+            <div class="track-card">
+                <div class="track-icon">💰</div>
+                <h3>Financial Analysis</h3>
+                <p style="color: var(--gray); margin-bottom: 1rem;">Real-time financial data processing, risk assessment, and trading automation</p>
+                <ul>
+                    <li>Market analysis</li>
+                    <li>Risk assessment</li>
+                    <li>Portfolio optimization</li>
+                </ul>
+            </div>
+
+            <div class="track-card">
+                <div class="track-icon">📦</div>
+                <h3>Supply Chain Optimization</h3>
+                <p style="color: var(--gray); margin-bottom: 1rem;">Intelligent logistics, inventory management, and demand forecasting</p>
+                <ul>
+                    <li>Inventory tracking</li>
+                    <li>Demand forecasting</li>
+                    <li>Route optimization</li>
+                </ul>
+            </div>
+
+            <div class="track-card">
+                <div class="track-icon">🎧</div>
+                <h3>Customer Service Automation</h3>
+                <p style="color: var(--gray); margin-bottom: 1rem;">Multi-modal customer support with voice, text, and visual processing</p>
+                <ul>
+                    <li>Voice interactions</li>
+                    <li>Issue resolution</li>
+                    <li>Multi-language support</li>
+                </ul>
+            </div>
+
+            <div class="track-card">
+                <div class="track-icon">🌱</div>
+                <h3>Sustainability Monitoring</h3>
+                <p style="color: var(--gray); margin-bottom: 1rem;">Environmental data analysis and sustainability impact assessment</p>
+                <ul>
+                    <li>Environmental monitoring</li>
+                    <li>Impact assessment</li>
+                    <li>Resource optimization</li>
+                </ul>
+            </div>
+
+            <div class="track-card">
+                <div class="track-icon">🚀</div>
+                <h3>Cross-Domain Innovation</h3>
+                <p style="color: var(--gray); margin-bottom: 1rem;">Create novel solutions that span multiple domains and use cases</p>
+                <ul>
+                    <li>Creative combinations</li>
+                    <li>Novel applications</li>
+                    <li>Domain integration</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline -->
+    <section id="timeline">
+        <h2>Event Timeline</h2>
+        <p style="text-align: center; color: var(--gray); font-size: 1.2rem; margin-bottom: 3rem;">Key dates and milestones for the Groq Real-time AI Agent Hackathon</p>
+        
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>Registration Opens</h3>
+                    <p style="color: var(--gray); margin-top: 0.5rem;">August 26, 2025 - 6:00 PM IST</p>
+                    <p style="color: var(--gray); margin-top: 1rem;">Registration begins for all participants worldwide</p>
+                </div>
+                <div class="timeline-dot">
+                    <span class="timeline-status">Completed</span>
+                    <span class="timeline-date">Aug 26</span>
+                </div>
+                <div></div>
+            </div>
+
+            <div class="timeline-item">
+                <div></div>
+                <div class="timeline-dot">
+                    <span class="timeline-status">Active</span>
+                    <span class="timeline-date">Sep 1</span>
+                </div>
+                <div class="timeline-content">
+                    <h3>Hackathon Begins</h3>
+                    <p style="color: var(--gray); margin-top: 0.5rem;">September 1, 2025 - 9:00 AM IST</p>
+                    <p style="color: var(--gray); margin-top: 1rem;">Development phase starts, access to Groq API and resources</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>Submission Deadline</h3>
+                    <p style="color: var(--gray); margin-top: 0.5rem;">October 6, 2025 - 11:59 PM IST</p>
+                    <p style="color: var(--gray); margin-top: 1rem;">Final submissions must be completed by this deadline</p>
+                </div>
+                <div class="timeline-dot">
+                    <span class="timeline-status">Upcoming</span>
+                    <span class="timeline-date">Oct 6</span>
+                </div>
+                <div></div>
+            </div>
+
+            <div class="timeline-item">
+                <div></div>
+                <div class="timeline-dot">
+                    <span class="timeline-status">Upcoming</span>
+                    <span class="timeline-date">Sep-Oct</span>
+                </div>
+                <div class="timeline-content">
+                    <h3>Judging Period</h3>
+                    <p style="color: var(--gray); margin-top: 0.5rem;">September 1 - October 6, 2025</p>
+                    <p style="color: var(--gray); margin-top: 1rem;">Expert panel reviews and evaluates all submissions</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>Results Announced</h3>
+                    <p style="color: var(--gray); margin-top: 0.5rem;">October 6, 2025 - 12:00 PM IST</p>
+                    <p style="color: var(--gray); margin-top: 1rem;">Winners announced and prizes distributed</p>
+                </div>
+                <div class="timeline-dot">
+                    <span class="timeline-status">Upcoming</span>
+                    <span class="timeline-date">Oct 6</span>
+                </div>
+                <div></div>
+            </div>
+        </div>
+
+        <div class="stats" style="margin-top: 4rem;">
+            <div class="stat-item">
+                <div class="stat-number">45 Days</div>
+                <div class="stat-label">Development Time</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">45 Days</div>
+                <div class="stat-label">Judging Period</div>
+            </div>
+            <div class="stat-item" style="grid-column: span 2;">
+                <div class="stat-number">Oct 6</div>
+                <div class="stat-label">Results Day</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sample Architecture -->
+    <section>
+        <h2>Sample Architecture</h2>
+        <p style="text-align: center; color: var(--gray); font-size: 1.2rem; margin-bottom: 1rem;">Intelligent Document Processing</p>
+        <p style="text-align: center; color: var(--gray); margin-bottom: 3rem;">See how multiple agents work together to process documents with real-time performance</p>
+        
+        <div class="architecture-diagram">
+            <h3 style="text-align: center; margin-bottom: 2rem;">Agent Ensemble</h3>
+            
+            <div class="agent-grid">
+                <div class="agent-box">
+                    <h4>Intake Agent</h4>
+                    <div class="agent-model">Whisper</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Handles voice and document uploads</p>
+                </div>
+                <div class="agent-box">
+                    <h4>Vision Agent</h4>
+                    <div class="agent-model">Llama-4-Scout</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Extracts text/tables from documents</p>
+                </div>
+                <div class="agent-box">
+                    <h4>Classification Agent</h4>
+                    <div class="agent-model">Gemma2</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Categorizes documents</p>
+                </div>
+                <div class="agent-box">
+                    <h4>Integration Agent</h4>
+                    <div class="agent-model">MCP</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Connects to APIs/databases</p>
+                </div>
+                <div class="agent-box">
+                    <h4>Orchestrator Agent</h4>
+                    <div class="agent-model">Llama 3.3 70B</div>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Coordinates workflow</p>
+                </div>
+            </div>
+
+            <h3 style="text-align: center; margin: 3rem 0 2rem;">MCP Integration Points</h3>
+            <div class="platform-features">
+                <div class="feature-box">
+                    <h4>Database Connector</h4>
+                    <p>Store processed documents and metadata</p>
+                </div>
+                <div class="feature-box">
+                    <h4>API Gateway</h4>
+                    <p>Push data to downstream systems</p>
+                </div>
+                <div class="feature-box">
+                    <h4>File System</h4>
+                    <p>Access shared document repositories</p>
+                </div>
+                <div class="feature-box">
+                    <h4>Notification Service</h4>
+                    <p>Alert users of processing status</p>
+                </div>
+            </div>
+
+            <h3 style="text-align: center; margin: 3rem 0 2rem;">Flow Example</h3>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <p>Voice input: "Process these invoices and update accounting"</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <p>Vision agent extracts key data</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <p>Validation via MCP-connected vendor DB</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <p>MCP updates accounting system</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <p>Voice feedback confirms success</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <div style="background: var(--dark-tertiary); padding: 2rem; border-radius: 12px; display: inline-block;">
+                    <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Real-Time Performance</h3>
+                    <p style="font-size: 2rem; font-weight: 700;">Sub-500ms Response Time</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Judging Criteria -->
+    <section>
+        <h2>Judging Criteria</h2>
+        <p style="text-align: center; color: var(--gray); font-size: 1.2rem; margin-bottom: 3rem;">How your multi-agent AI system will be evaluated across technical excellence, real-world impact, and innovation</p>
+        
+        <div class="criteria-grid">
+            <div class="criteria-card">
+                <div class="percentage">35%</div>
+                <h3>Technical Excellence</h3>
+                <p style="color: var(--gray);">Code quality, architecture, and implementation</p>
+            </div>
+            <div class="criteria-card">
+                <div class="percentage">35%</div>
+                <h3>Real-World Impact</h3>
+                <p style="color: var(--gray);">Practical value and problem-solving effectiveness</p>
+            </div>
+            <div class="criteria-card">
+                <div class="percentage">30%</div>
+                <h3>Innovation</h3>
+                <p style="color: var(--gray);">Creativity and novel approaches</p>
+            </div>
+        </div>
+
+        <div class="platform-card" style="margin-top: 3rem;">
+            <h3>Technical Excellence Components</h3>
+            <div class="platform-features" style="margin-top: 2rem;">
+                <div class="feature-box">
+                    <h4>Agent Architecture</h4>
+                    <p>How well do your agents collaborate and specialize?</p>
+                </div>
+                <div class="feature-box">
+                    <h4>MCP Implementation</h4>
+                    <p>Effective use of Model Context Protocol for tool integration</p>
+                </div>
+                <div class="feature-box">
+                    <h4>Performance</h4>
+                    <p>Leveraging Groq's speed for responsive user experiences</p>
+                </div>
+                <div class="feature-box">
+                    <h4>Code Quality</h4>
+                    <p>Clean, maintainable, and well-documented implementation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Submission Guidelines -->
+    <section id="submit">
+        <h2>Submission Guidelines</h2>
+        <p style="text-align: center; color: var(--gray); font-size: 1.2rem; margin-bottom: 1rem;">Submission Requirements:</p>
+        <p style="text-align: center; color: var(--light); font-weight: 600; margin-bottom: 3rem;">GitHub Repository + Max. 3 Minute Video + Live Deployment Link (or comprehensive README for running locally)</p>
+        
+        <div class="submission-steps">
+            <div class="submission-step">
+                <h3>1. Executive Summary</h3>
+                <ul>
+                    <li><strong>Project Title:</strong> Clear, descriptive name</li>
+                    <li><strong>Problem Statement:</strong> What real-world problem are you solving?</li>
+                    <li><strong>Solution Overview:</strong> High-level description of your agent system</li>
+                    <li><strong>Key Results:</strong> Quantifiable outcomes and benefits</li>
+                </ul>
+            </div>
+
+            <div class="submission-step">
+                <h3>2. System Architecture</h3>
+                <ul>
+                    <li><strong>Agent Roles:</strong> Define each agent's specific responsibilities</li>
+                    <li><strong>Model Selection:</strong> Justify your choice of Groq models for each agent</li>
+                    <li><strong>MCP Integration:</strong> Show how agents connect to external systems</li>
+                    <li><strong>Communication Flow:</strong> Diagram how agents coordinate and share information</li>
+                </ul>
+            </div>
+
+            <div class="submission-step">
+                <h3>3. Technical Implementation</h3>
+                <ul>
+                    <li><strong>Agent Code:</strong> Well-documented implementations of each agent</li>
+                    <li><strong>MCP Connectors:</strong> Show integration with external tools/data</li>
+                    <li><strong>Orchestration Logic:</strong> How agents coordinate their actions</li>
+                    <li><strong>Error Handling:</strong> Robust handling of edge cases and failures</li>
+                </ul>
+            </div>
+
+            <div class="submission-step">
+                <h3>4. Live Demonstration</h3>
+                <ul>
+                    <li><strong>Complete User Journey:</strong> End-to-end workflow demonstration</li>
+                    <li><strong>Multi-Modal Inputs:</strong> Show text, voice, image, or data processing</li>
+                    <li><strong>Real-Time Performance:</strong> Highlight Groq's speed advantages</li>
+                    <li><strong>MCP in Action:</strong> Demonstrate external system integration</li>
+                </ul>
+            </div>
+
+            <div class="submission-step">
+                <h3>5. Performance & Impact Analysis</h3>
+                <ul>
+                    <li><strong>Speed Benchmarks:</strong> Quantify the performance benefits of Groq</li>
+                    <li><strong>User Experience:</strong> How does real-time inference improve usability?</li>
+                    <li><strong>Business Impact:</strong> Cost savings, efficiency gains, or other measurable benefits</li>
+                    <li><strong>Scalability Considerations:</strong> How would this work at enterprise scale?</li>
+                </ul>
+            </div>
+
+            <div class="submission-step">
+                <h3>6. Setup & Deployment</h3>
+                <ul>
+                    <li><strong>Environment Setup:</strong> Clear instructions for running your solution</li>
+                    <li><strong>Dependencies:</strong> All required packages</li>
+                    <li><strong>MCP Configuration:</strong> How to connect to external systems</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="goal-section" style="margin-top: 4rem;">
+            <h2>Ready to build the future of AI agents?</h2>
+            <p style="font-size: 1.2rem; color: var(--light); max-width: 900px; margin: 1rem auto 2rem;">
+                Your solution could be the next breakthrough in intelligent automation. Show us what's possible when lightning-fast inference meets intelligent agent coordination.
+            </p>
+            <div class="cta-buttons">
+                <a href="#" class="btn-primary">Submit Your Project</a>
+                <a href="#" class="btn-secondary">Need help with submission?</a>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="#" class="btn-primary" style="padding: 1.2rem 3rem; font-size: 1.1rem;">Register Now</a>
+        </div>
+
+        <p style="text-align: center; color: var(--gray); margin-top: 2rem; font-size: 0.9rem;">
+            ⚠️ Disclaimer: Hackathon evaluation and grading are conducted in accordance with our internal methods and criteria. All evaluation outcomes are final and not subject to appeal.
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="logo" style="font-size: 1.8rem; margin-bottom: 1rem;">🎯 SNS DT-AI-Hack</div>
+                <p>Building the future of AI through collaborative innovation and real-world problem solving.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#challenge">Challenge</a></li>
+                    <li><a href="#tracks">Tracks</a></li>
+                    <li><a href="#timeline">Timeline</a></li>
+                    <li><a href="#submit">Submit</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API Reference</a></li>
+                    <li><a href="#">Tutorials</a></li>
+                    <li><a href="#">Community</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Connect With Us</h4>
+                <ul>
+                    <li><a href="#">Telegram</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">GitHub</a></li>
+                    <li><a href="#">Discord</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 SNS DT-AI-Hack. Powered by Groq. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
